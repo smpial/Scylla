@@ -13,11 +13,11 @@ const WCHAR AboutGui::TEXT_GREETINGS[]      = L"Greetz: metr0, G36KV and all fro
 const WCHAR AboutGui::TEXT_LICENSE[]        = L"Scylla is licensed under the <a>GNU General Public License v3</a>";
 const WCHAR AboutGui::TEXT_TINYXML[]        = L"XML support is provided by <a>TinyXML</a>";
 
-const WCHAR AboutGui::URL_VISIT1[]  = L"http://www.c0rk.org/portal/a/";
+const WCHAR AboutGui::URL_VISIT1[]  = L"https://web.archive.org/web/20150305083958/http://www.c0rk.org/portal/ipb";
 const WCHAR AboutGui::URL_VISIT2[]  = L"http://forum.tuts4you.com";
-const WCHAR AboutGui::URL_DISTORM[] = L"http://code.google.com/p/distorm/";
+const WCHAR AboutGui::URL_DISTORM[] = L"https://github.com/gdabah/distorm";
 const WCHAR AboutGui::URL_WTL[]     = L"http://wtl.sourceforge.net";
-const WCHAR AboutGui::URL_SILK[]    = L"http://www.famfamfam.com";
+const WCHAR AboutGui::URL_SILK[]    = L"https://web.archive.org/web/20180125090226/http://www.famfamfam.com/lab/icons/silk/";
 const WCHAR AboutGui::URL_LICENSE[] = L"http://www.gnu.org/licenses/gpl-3.0.html";
 const WCHAR AboutGui::URL_TINYXML[] = L"http://sourceforge.net/projects/tinyxml/";
 
@@ -34,7 +34,7 @@ BOOL AboutGui::OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
 
 	StaticTitle.SetFont(FontBold, FALSE);
 
-	StaticTitle.SetWindowText(APPNAME L" " ARCHITECTURE L" " APPVERSION);
+	StaticTitle.SetWindowText(APPNAME L" " ARCHITECTURE L" " APPVERSION L" (x64dbg fork)");
 	StaticDeveloped.SetWindowText(TEXT_DEVELOPED);
 	StaticGreetings.SetWindowText(TEXT_GREETINGS);
 	StaticYoda.SetWindowText(TEXT_CREDIT_YODA);

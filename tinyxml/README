@@ -1,4 +1,4 @@
-Download tinyxml from here: https://sourceforge.net/projects/tinyxml/
+Download tinyxml from here: https://sourceforge.net/projects/tinyxml/files/tinyxml/2.6.2/tinyxml_2_6_2.zip/download
 Copy the following files in this directory:
 tinystr.cpp
 tinyxml.cpp
