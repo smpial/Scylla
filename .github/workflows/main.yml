@@ -35,6 +35,22 @@ jobs:
         run: |
           git clone https://github.com/Win32-WTL/WTL.git external/wtl
 
+      - name: Fix WTL include path
+        shell: powershell
+        run: |
+          Get-ChildItem -Recurse -Filter *.vcxproj | ForEach-Object {
+            $content = Get-Content $_.FullName
+      
+            if ($content -match "atlapp.h") {
+              Write-Host "Fixing WTL include in $($_.FullName)"
+      
+              $content = $content -replace "</PropertyGroup>",
+              "<AdditionalIncludeDirectories>$(SolutionDir)external\wtl\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories></PropertyGroup>"
+      
+              Set-Content $_.FullName $content
+            }
+          }
+
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
@@ -46,28 +62,28 @@ jobs:
       #
       - name: Build Win32 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /m
 
       #
       # Build DLL x86
       #
       - name: Build Win32 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /m
 
       #
       # Build EXE x64
       #
       - name: Build x64 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /m
 
       #
       # Build DLL x64
       #
       - name: Build x64 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /m
 
       #
       # Package artifacts
