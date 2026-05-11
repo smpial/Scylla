@@ -29,27 +29,6 @@ jobs:
               -replace '<PlatformToolset>v120_xp</PlatformToolset>', '<PlatformToolset>v143</PlatformToolset>' `
               | Set-Content $_.FullName
           }
-      
-      - name: Download WTL
-        shell: powershell
-        run: |
-          git clone https://github.com/Win32-WTL/WTL.git external/wtl
-
-      - name: Fix WTL include path
-        shell: powershell
-        run: |
-          Get-ChildItem -Recurse -Filter *.vcxproj | ForEach-Object {
-            $content = Get-Content $_.FullName
-      
-            if ($content -match "atlapp.h") {
-              Write-Host "Fixing WTL include in $($_.FullName)"
-      
-              $content = $content -replace "</PropertyGroup>",
-              "<AdditionalIncludeDirectories>$(SolutionDir)external\wtl\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories></PropertyGroup>"
-      
-              Set-Content $_.FullName $content
-            }
-          }
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
