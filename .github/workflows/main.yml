@@ -29,6 +29,19 @@ jobs:
               -replace '<PlatformToolset>v120_xp</PlatformToolset>', '<PlatformToolset>v143</PlatformToolset>' `
               | Set-Content $_.FullName
           }
+      
+      - name: Patch deprecated STL usage
+        shell: powershell
+        run: |
+          Get-ChildItem -Recurse -Filter *.vcxproj | ForEach-Object {
+            $content = Get-Content $_.FullName -Raw
+      
+            $content = $content -replace `
+              '<PreprocessorDefinitions>',
+              '<PreprocessorDefinitions>_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;'
+      
+            Set-Content $_.FullName $content
+          }
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
@@ -41,28 +54,28 @@ jobs:
       #
       - name: Build Win32 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /p:PreprocessorDefinitions="_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)" /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /m
 
       #
       # Build DLL x86
       #
       - name: Build Win32 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /p:PreprocessorDefinitions="_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)" /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /m
 
       #
       # Build EXE x64
       #
       - name: Build x64 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /p:PreprocessorDefinitions="_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)" /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /m
 
       #
       # Build DLL x64
       #
       - name: Build x64 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /p:PreprocessorDefinitions="_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)" /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /m
 
       #
       # Package artifacts
