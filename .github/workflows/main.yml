@@ -29,6 +29,11 @@ jobs:
               -replace '<PlatformToolset>v120_xp</PlatformToolset>', '<PlatformToolset>v143</PlatformToolset>' `
               | Set-Content $_.FullName
           }
+      
+      - name: Download WTL
+        shell: powershell
+        run: |
+          git clone https://github.com/Win32-WTL/WTL.git external/wtl
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
@@ -41,28 +46,28 @@ jobs:
       #
       - name: Build Win32 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=Win32 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
 
       #
       # Build DLL x86
       #
       - name: Build Win32 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=Win32 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
 
       #
       # Build EXE x64
       #
       - name: Build x64 Release
         run: |
-          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /m
+          msbuild Scylla.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
 
       #
       # Build DLL x64
       #
       - name: Build x64 DLL
         run: |
-          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /m
+          msbuild Scylla.sln /p:Configuration=DllRelease /p:Platform=x64 /p:AdditionalIncludeDirectories="${{ github.workspace }}\external\wtl\Include" /m
 
       #
       # Package artifacts
