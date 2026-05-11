@@ -21,6 +21,15 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Retarget projects to v143
+        shell: powershell
+        run: |
+          Get-ChildItem -Recurse -Filter *.vcxproj | ForEach-Object {
+            (Get-Content $_.FullName) `
+              -replace '<PlatformToolset>v120_xp</PlatformToolset>', '<PlatformToolset>v143</PlatformToolset>' `
+              | Set-Content $_.FullName
+          }
+
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
