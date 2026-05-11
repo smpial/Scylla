@@ -1,0 +1,106 @@
+name: Build Scylla
+
+on:
+  push:
+    branches:
+      - vs13
+
+env:
+  SCYVERSION: Scylla_v0.9.8
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore packages
+        run: nuget restore Scylla.sln
+
+      #
+      # Build EXE x86
+      #
+      - name: Build Win32 Release
+        run: |
+          msbuild Scylla.sln ^
+            /p:Configuration=Release ^
+            /p:Platform=Win32 ^
+            /m
+
+      #
+      # Build DLL x86
+      #
+      - name: Build Win32 DLL
+        run: |
+          msbuild Scylla.sln ^
+            /p:Configuration=DllRelease ^
+            /p:Platform=Win32 ^
+            /m
+
+      #
+      # Build EXE x64
+      #
+      - name: Build x64 Release
+        run: |
+          msbuild Scylla.sln ^
+            /p:Configuration=Release ^
+            /p:Platform=x64 ^
+            /m
+
+      #
+      # Build DLL x64
+      #
+      - name: Build x64 DLL
+        run: |
+          msbuild Scylla.sln ^
+            /p:Configuration=DllRelease ^
+            /p:Platform=x64 ^
+            /m
+
+      #
+      # Package artifacts
+      #
+      - name: Prepare package
+        shell: cmd
+        run: |
+          mkdir %SCYVERSION%
+
+          copy ".\Win32\Release\Scylla.exe" ".\%SCYVERSION%\Scylla_x86.exe"
+          copy ".\x64\Release\Scylla.exe" ".\%SCYVERSION%\Scylla_x64.exe"
+
+          copy ".\Win32\Release\Scylla.map" ".\%SCYVERSION%\Scylla_x86.map"
+          copy ".\x64\Release\Scylla.map" ".\%SCYVERSION%\Scylla_x64.map"
+
+          copy ".\Win32\DllRelease\Scylla.dll" ".\%SCYVERSION%\Scylla_x86.dll"
+          copy ".\x64\DllRelease\Scylla.dll" ".\%SCYVERSION%\Scylla_x64.dll"
+
+          copy ".\Win32\DllRelease\Scylla.lib" ".\%SCYVERSION%\Scylla_x86.lib"
+          copy ".\x64\DllRelease\Scylla.lib" ".\%SCYVERSION%\Scylla_x64.lib"
+
+      #
+      # Zip package
+      #
+      - name: Create ZIP
+        run: |
+          powershell Compress-Archive `
+            -Path $env:SCYVERSION `
+            -DestinationPath "$env:SCYVERSION.zip"
+
+      #
+      # Upload artifact
+      #
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SCYVERSION }}
+          path: ${{ env.SCYVERSION }}.zip
